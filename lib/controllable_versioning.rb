@@ -1,6 +1,12 @@
 require "controllable_versioning/version"
+require 'active_record'
+require_relative './controllable_versioning/instance_methods'
+require_relative './controllable_versioning/class_methods'
 
 module ControllableVersioning
-  class Error < StandardError; end
-  # Your code goes here...
+  include InstanceMethods
+
+  def self.included(klass)
+    klass.extend ClassMethods
+  end
 end
