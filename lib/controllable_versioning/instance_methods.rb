@@ -2,7 +2,10 @@ module ControllableVersioning
   module InstanceMethods
 
     def version!
-      "version"
+      ActiveRecord::Base.transaction do
+        self.save!
+        Copied.create!(versioned_attrs)
+      end
     end
 
     def restore_version!
@@ -13,12 +16,12 @@ module ControllableVersioning
 
     end
 
-    def originated_model_id
-
+    def originated_model_id_column
+      column_name = :originated_model_id
     end
 
-    def originated_model_name
-
+    def originated_model_name_hash
+      target_hash = { :originated_model_name => self.class.name}
     end
 
     def latest_version
@@ -28,5 +31,35 @@ module ControllableVersioning
     def versions
 
     end
+
+
+    # private
+    def user_defined_column_hash
+      {}
+    end
+
+
+    def default_column_hash
+      columns = self.class.column_names - %w(id created_at updated_at)
+      columns.map do |col|
+        [col, col]
+      end.to_h
+    end
+
+    def versioned_column_hash(default=true)
+      target_hash = {}
+      target_hash.merge!(default_column_hash) if default
+      target_hash.merge!(user_defined_column_hash)
+    end
+
+    def versioned_attrs
+      attrs = versioned_column_hash.map do |original_column, copied_column|
+        [copied_column, self[original_column]]
+      end.to_h
+      attrs.merge!({originated_model_id_column => self.id})
+      attrs.merge!(originated_model_name_hash)
+      attrs
+    end
+
   end
 end
