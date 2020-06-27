@@ -9,7 +9,6 @@ module Support
       connect
       Schema.init_or_create_tables
       Data.execute
-      binding.pry
     end
 
     def self.connect
