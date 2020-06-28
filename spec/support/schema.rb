@@ -25,6 +25,7 @@ module Support
           t.integer :price
           t.integer :price_with_tax
           t.string :do_not_want_to_copy
+          t.integer :some_identifier
         end
 
         create_table :controlled_copieds, force: true do |t|
@@ -35,6 +36,7 @@ module Support
           t.date :foo_bar_attendance_on
           t.integer :foo_bar_price
           t.integer :foo_bar_price_with_tax
+          t.integer :some_identifier
         end
       end
     end

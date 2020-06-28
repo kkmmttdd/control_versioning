@@ -1,31 +1,24 @@
 module ControllableVersioning
   module InstanceMethods
 
-    def version!
+    def version!(dynamic_attr={})
       ActiveRecord::Base.transaction do
         self.save!
-        self.class.target_model.create!(versioned_attrs)
+        attr = versioned_attrs
+        attr.merge! dynamic_attr
+        self.class.target_model.create!(attr)
       end
     end
 
-    def restore_version!
-
-    end
-
-    def restore_last!
-
-    end
-
-    def latest_version
-
+    def restore_version!(version)
+      self.update!(restore_attrs(version))
     end
 
     def versions
-
+      self.class.target_model.where({originated_model_id: self.id, originated_model_name: self.class.name})
     end
 
-
-    # private
+    private
     def versioned_attrs
       attrs = self.class.versioned_column_hash.map do |original_column, copied_column|
         [copied_column, self.send(original_column)]
@@ -35,5 +28,12 @@ module ControllableVersioning
       attrs
     end
 
+    def restore_attrs(version)
+      accepted_column_names = self.class.column_names.map(&:to_sym)
+      attrs = self.class.versioned_column_hash.map do |original_column, copied_column|
+        next unless accepted_column_names.include?(original_column)
+        [original_column, version.send(copied_column)]
+      end.compact.to_h
+    end
   end
 end

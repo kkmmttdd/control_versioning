@@ -10,7 +10,7 @@ class Original < ActiveRecord::Base
   include ControllableVersioning
   control_versioning do
     target Copied
-    exclude [:do_not_want_to_copy]
+    exclude [:do_not_want_to_copy, :some_identifier]
   end
 
   def price_with_tax
