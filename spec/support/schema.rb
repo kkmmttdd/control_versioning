@@ -8,6 +8,7 @@ module Support
           t.string :name
           t.date :attendance_on
           t.integer :price
+          t.string :do_not_want_to_copy
         end
 
         create_table :controlled_originals, force: true do |t|
@@ -23,6 +24,7 @@ module Support
           t.date :attendance_on
           t.integer :price
           t.integer :price_with_tax
+          t.string :do_not_want_to_copy
         end
 
         create_table :controlled_copieds, force: true do |t|

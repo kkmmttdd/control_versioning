@@ -4,7 +4,8 @@ module Support
       Original.create!(
           name: "original name",
           attendance_on: Date.new(2020, 1, 1),
-          price: 1000
+          price: 1000,
+          do_not_want_to_copy: "do not want to copy"
       )
       ControlledOriginal.create!(
           name: "controlled original name",

@@ -29,6 +29,10 @@ RSpec.describe ControllableVersioning do
         expect(copied_record.price_with_tax).to eq 1100
       end
 
+      it "excluded columns specified by user" do
+        expect(copied_record.do_not_want_to_copy).to eq nil
+      end
+
       it "copied has original instance id" do
         expect(copied_record.originated_model_id).to eq 1
       end
@@ -46,9 +50,9 @@ RSpec.describe ControllableVersioning do
       end
 
       it "copies expected columns" do
-        expect(copied_record.name).to eq "controlled original name"
-        expect(copied_record.attendance_on).to eq Date.new(2021, 1, 1)
-        expect(copied_record.price).to eq 2000
+        expect(copied_record.foo_bar_name).to eq "controlled original name"
+        expect(copied_record.foo_bar_attendance_on).to eq Date.new(2021, 1, 1)
+        expect(copied_record.foo_bar_price).to eq 2000
       end
 
       it "not copied columns not specified by user" do
