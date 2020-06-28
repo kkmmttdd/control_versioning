@@ -81,4 +81,40 @@ RSpec.describe ControllableVersioning do
     end
   end
 
+  describe "#InstanceMethod::versions" do
+    context "7 times" do
+      let(:original_record) { Original.first}
+      let(:copied_record) { 7.times do original_record.version! end }
+      it "versions length is 7" do
+        expect(original_record.versions.length).to eq 7
+      end
+    end
+  end
+
+  describe "#InstanceMethod::restore!" do
+    context "default case" do
+      context "restore 6th version out of 7 versions" do
+        let(:original_record) { Original.first}
+        it "can restore expected attributes" do
+          (1..7).each do |i| original_record.version!(name: "name #{i.to_s}", some_identifier: i) end
+          version = original_record.versions.where(some_identifier: 6).first
+          original_record.restore_version!(version)
+          expect(original_record.name).to eq "name 6"
+        end
+      end
+    end
+
+    context "controlled case(and default false)" do
+      context "restore 6th version out of 7 versions" do
+        let(:original_record) { ControlledOriginal.first}
+        it "can restore expected attributes" do
+          (1..7).each do |i| original_record.version!(foo_bar_name: "name #{i.to_s}", some_identifier: i) end
+          version = original_record.versions.where(some_identifier: 6).first
+          original_record.restore_version!(version)
+          expect(original_record.name).to eq "name 6"
+        end
+      end
+    end
+  end
+
 end

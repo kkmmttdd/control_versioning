@@ -36,7 +36,7 @@ module Support
           t.date :foo_bar_attendance_on
           t.integer :foo_bar_price
           t.integer :foo_bar_price_with_tax
-
+          t.integer :some_identifier
         end
       end
     end
