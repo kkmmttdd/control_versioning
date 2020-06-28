@@ -4,6 +4,7 @@ module ControllableVersioning
       klass.class_eval do
         @default = true
         @user_defined_column_hash = {}
+        @excluded_columns = []
       end
     end
 
@@ -24,7 +25,8 @@ module ControllableVersioning
 
     private
     def default_column_hash
-      columns = self.column_names - %w(id created_at updated_at)
+      default_excluded_columns = %i(id created_at updated_at originated_model_id originated_model_name)
+      columns = self.target_model.column_names.map(&:to_sym) - default_excluded_columns - @excluded_columns
       columns.map do |col|
         [col, col]
       end.to_h
@@ -35,14 +37,16 @@ module ControllableVersioning
       @target_model = target_model
     end
 
-
-
     def default(is_default=true)
       @default = is_default
     end
 
     def versioning_columns(target_hash)
       @user_defined_column_hash = target_hash if target_hash
+    end
+
+    def exclude(excluded_columns)
+      @excluded_columns = excluded_columns
     end
   end
 end

@@ -28,7 +28,7 @@ module ControllableVersioning
     # private
     def versioned_attrs
       attrs = self.class.versioned_column_hash.map do |original_column, copied_column|
-        [copied_column, self[original_column]]
+        [copied_column, self.send(original_column)]
       end.to_h
       attrs.merge!({:originated_model_id => self.id})
       attrs.merge!({:originated_model_name => self.class.name})
