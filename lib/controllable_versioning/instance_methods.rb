@@ -4,7 +4,7 @@ module ControllableVersioning
     def version!
       ActiveRecord::Base.transaction do
         self.save!
-        Copied.create!(versioned_attrs)
+        self.class.target_model.create!(versioned_attrs)
       end
     end
 
@@ -26,26 +26,8 @@ module ControllableVersioning
 
 
     # private
-    def user_defined_column_hash
-      {}
-    end
-
-
-    def default_column_hash
-      columns = self.class.column_names - %w(id created_at updated_at)
-      columns.map do |col|
-        [col, col]
-      end.to_h
-    end
-
-    def versioned_column_hash(default=true)
-      target_hash = {}
-      target_hash.merge!(default_column_hash) if default
-      target_hash.merge!(user_defined_column_hash)
-    end
-
     def versioned_attrs
-      attrs = versioned_column_hash.map do |original_column, copied_column|
+      attrs = self.class.versioned_column_hash.map do |original_column, copied_column|
         [copied_column, self[original_column]]
       end.to_h
       attrs.merge!({:originated_model_id => self.id})
