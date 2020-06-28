@@ -71,6 +71,14 @@ RSpec.describe ControllableVersioning do
         expect(copied_record.originated_model_name).to eq "ControlledOriginal"
       end
     end
+
+    context "dynamic attr case" do
+      let(:original_record) { Original.first}
+      let(:copied_record) { original_record.version!({some_identifier: 7})}
+      it "dynamic attr is copied" do
+        expect(copied_record.some_identifier).to eq 7
+      end
+    end
   end
 
 end

@@ -1,10 +1,12 @@
 module ControllableVersioning
   module InstanceMethods
 
-    def version!
+    def version!(dynamic_attr={})
       ActiveRecord::Base.transaction do
         self.save!
-        self.class.target_model.create!(versioned_attrs)
+        attr = versioned_attrs
+        attr.merge! dynamic_attr
+        self.class.target_model.create!(attr)
       end
     end
 
