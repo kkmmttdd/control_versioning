@@ -3,32 +3,70 @@ require 'support/base'
 require_relative 'spec_utils'
 
 RSpec.describe ControllableVersioning do
-  before :context do
-    Support::Base.init_or_refresh_data
-  end
-
   it "has a version number" do
     expect(ControllableVersioning::VERSION).not_to be nil
   end
 
-  context "default case" do
-    let(:original_record) { Original.first}
-    let(:copied_record) { original_record.version!}
-    it "version! copies expected model" do
-      expect(copied_record.class.name).to eq "Copied"
+  before :context do
+    Support::Base.init_or_refresh_data
+  end
+
+  describe "#InstanceMethods::version!" do
+    context "default case" do
+      let(:original_record) { Original.first}
+      let(:copied_record) { original_record.version!}
+      it "copies expected model" do
+        expect(copied_record.class.name).to eq "Copied"
+      end
+
+      it "copies expected columns" do
+        expect(copied_record.name).to eq "original name"
+        expect(copied_record.attendance_on).to eq Date.new(2020, 1, 1)
+        expect(copied_record.price).to eq 1000
+      end
+
+      it "copies expected instance methods" do
+        expect(copied_record.price_with_tax).to eq 1100
+      end
+
+      it "copied has original instance id" do
+        expect(copied_record.originated_model_id).to eq 1
+      end
+
+      it "copied has original instance model" do
+        expect(copied_record.originated_model_name).to eq "Original"
+      end
     end
 
-    it "version! copies expected columns" do
-      expect(copied_record.name).to eq "original name"
-      expect(copied_record.attendance_on).to eq Date.new(2020, 1, 1)
-    end
+    context "controlled case(and default false)" do
+      let(:original_record) { ControlledOriginal.first}
+      let(:copied_record) { original_record.version!}
+      it "copies expected model" do
+        expect(copied_record.class.name).to eq "ControlledCopied"
+      end
 
-    it "copied has original instance id" do
-      expect(copied_record.originated_model_id).to eq 1
-    end
+      it "copies expected columns" do
+        expect(copied_record.name).to eq "controlled original name"
+        expect(copied_record.attendance_on).to eq Date.new(2021, 1, 1)
+        expect(copied_record.price).to eq 2000
+      end
 
-    it "copied has original instance model" do
-      expect(copied_record.originated_model_name).to eq "Original"
+      it "not copied columns not specified by user" do
+        expect(copied_record.name).to eq nil
+      end
+
+      it "copies expected instance methods" do
+        expect(copied_record.foo_bar_price_with_tax).to eq 2200
+      end
+
+      it "copied has original instance id" do
+        expect(copied_record.originated_model_id).to eq 1
+      end
+
+      it "copied has original instance model" do
+        expect(copied_record.originated_model_name).to eq "ControlledOriginal"
+      end
     end
   end
+
 end

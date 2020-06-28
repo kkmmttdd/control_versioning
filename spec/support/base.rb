@@ -7,7 +7,7 @@ module Support
   module Base
     def self.init_or_refresh_data
       connect
-      Schema.init_or_create_tables
+      Schema.init_or_refresh_schema
       Data.execute
     end
 
